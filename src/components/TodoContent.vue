@@ -1,0 +1,135 @@
+<template>
+    <div class='todo-content'>
+        <div class="exit-todo-content" @click.stop="exitTodoContent">
+            <svg class="exit icon" t="1596628042314" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2958"><path d="M559.786667 512l314.026666-314.026667c13.653333-13.653333 13.653333-34.133333 0-47.786666-13.653333-13.653333-34.133333-13.653333-47.786666 0L512 464.213333 197.973333 150.186667c-13.653333-13.653333-34.133333-13.653333-47.786666 0-13.653333 13.653333-13.653333 34.133333 0 47.786666l314.026666 314.026667-314.026666 314.026667c-13.653333 13.653333-13.653333 34.133333 0 47.786666 13.653333 13.653333 34.133333 13.653333 47.786666 0l314.026667-314.026666 314.026667 314.026666c13.653333 13.653333 34.133333 13.653333 47.786666 0 13.653333-13.653333 13.653333-34.133333 0-47.786666L559.786667 512z" p-id="2959" fill='#fff'></path></svg>
+        </div>
+        <div class="todo-input-content date-input-content">
+            <input :class="['date-input','todo-input',isMobile ? 'unactive' : '']" v-model="todoDate" type="date">
+            <input :class="['date-input-mobile','todo-input',isMobile ? 'active' : '']" type="text" :value="todoDate" readonly placeholder="请选择时间">
+        </div>
+        <div class="todo-input-content title-input-content">
+            <input class="todo-input title-input" v-model="todoTitle" type="text" placeholder="title">
+        </div>
+        <div class="todo-input-content description-input-content">
+            <textarea v-model="todoDescription" class="todo-input description-input" cols="30" rows="10" placeholder="description"></textarea>
+        </div>
+        <button class="submit-todo" type="button">ADD TO DO</button>
+    </div>
+</template>
+
+
+<script>
+export default {
+    name: 'todocontent',
+    props:{
+        isMobile:{
+            type:Boolean,
+            required:true
+        }
+    },
+    data() {
+        return {
+            todoDate: '',
+            todoTitle: '',
+            todoDescription: '',
+        }
+    },
+    methods:{
+        //退出todolist输入框
+        exitTodoContent(){
+            this.$emit('exit-todo-content');
+        },
+    }
+}
+</script>
+
+<style lang="stylus" scoped>
+    .todo-content{
+        position absolute
+        top 0
+        bottom 0
+        display flex
+        flex-direction column
+        border-radius 0 7px 7px 0
+        padding 0 10px
+        box-shadow 1px 0 5px rgba(157,200,200,.7);
+        background-color $strongGreen
+
+        @media screen and (max-width: 764px){
+            width 100%
+            box-sizing border-box
+            border-radius 7px 7px 0 0
+            top 70px
+        }
+        .exit-todo-content{
+            display flex
+            justify-content flex-end
+            width 100%
+            padding 5px
+
+            .exit{
+                display block
+                height 20px
+                width auto
+                cursor pointer
+                transition transform .3s linear
+
+                &:hover{
+                    transform rotate(90deg) scale(1.1)
+                }
+            }
+        }
+        .date-input-content{
+            position relative
+        }
+
+        .todo-input-content{
+            width 100%;
+            min-height 50px
+            box-sizing border-box
+            padding 10px
+
+            .todo-input{
+                width 100%
+                box-sizing border-box
+                border none
+                outline none
+                padding 5px 10px
+            }
+            .date-input-mobile,.title-input,.submit-todo{
+                height 30px   
+            }
+            .date-input.unactive{
+                opacity 0
+            }
+
+            .date-input,.date-input-mobile{
+                width calc(100% - 20px);
+                position absolute
+                left 10px
+                top 10px
+            }
+            .date-input{
+                z-index 100
+            }
+            .date-input-mobile{
+                z-index 1
+            }
+        }
+
+        .submit-todo{
+            box-sizing content-box
+            padding 10px
+            border none 
+            border-radius 5px
+            outline none 
+            color #fff
+            background-color $lightPurple
+            cursor pointer
+
+            &:hover{
+                background-color $strongPurple
+            }
+        }
+    }
+</style>
