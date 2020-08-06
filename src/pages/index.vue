@@ -1,17 +1,33 @@
 <template>   
     <div>
         <transition name='todo-content-ani'>
-            <todo-content :isMobile='isMobile' v-if="isShowTodoContent" @exit-todo-content="exitTodoContent"/>
+            <todo-content 
+                :isMobile='isMobile' 
+                v-if="isShowTodoContent" 
+                @exit-todo-content="exitTodoContent" 
+                @submit-todo="submitTodo"
+            />
 
-            <div id="show-todo-content" @click.stop="isShowTodoContent = true" v-if="!isShowTodoContent">
+            <div id="show-todo-content" 
+                @click.stop="isShowTodoContent = true" 
+                v-if="!isShowTodoContent"
+            >
                 <svg t="1596622673094" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1989"><path d="M866.016 476h-318.016V165.984q0-15.008-10.496-25.504T512 129.984q-15.008 0-25.504 10.496t-10.496 25.504v310.016h-312q-14.016 0-24.992 10.496T128 512q0 15.008 11.008 25.504t24.992 10.496h312v312q0 14.016 10.496 24.992T512 896q15.008 0 25.504-11.008t10.496-24.992v-312h318.016q15.008 0 25.504-10.496t10.496-25.504q0-15.008-10.496-25.504t-25.504-10.496z" p-id="1990" fill="#fff"></path></svg>
             </div>
         </transition>
         <div id="main-content">
             <today/>
-            <control @finish-select="finishSelect" @clear-all="clearAll"/>
+            <control 
+                @finish-select="finishSelect" 
+                @clear-all="clearAll"
+            />
             <template v-for="item in todoList">
-                <todo-item :todo='item' :key="item.id" @change-select="changeSelect" @finish-item="finishItem"/>
+                <todo-item 
+                    :todo='item' 
+                    :key="item.id"
+                    @change-select="changeSelect" 
+                    @finish-item="finishItem"
+                />
             </template>
         </div>
     </div>
@@ -28,33 +44,12 @@ export default {
         return {
             screen:[document.body.clientWidth,document.body.clientHeight],
             isShowTodoContent: false,
-            todoList:[
-                {
-                    id: 0,
-                    title: 'title',
-                    description: 'description',
-                    deadline: '2020-08-22',
-                    status: 0
-                },
-                {
-                    id: 1,
-                    title: '今日任务',
-                    description: '描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述',
-                    deadline: '2020-08-22',
-                    status: 0
-                }
-            ],
-            selectItem:[],
+            todoList:[],
         }
     },
     mounted(){
         this.watchResize();
-        // let message = 'hello,world!';
-        // this.axios.post('test',{message}).then((res)=>{
-        //    console.log(res);
-        // }).catch((err)=>{
-        //    console.log(err);
-        // });
+        this.getTodo();
     },
     computed:{
         isMobile(){
@@ -79,30 +74,97 @@ export default {
         },
         //改变选中状态
         changeSelect(flag,id){
-            //let flag = args[0];
-            //let id = args[1];
-            if(flag){
-                this.selectItem.push(id);
-            }else{
-                if(this.selectItem.includes(id)) this.selectItem.splice(this.selectItem.indexOf(id),1);
-            }
+            flag = ((flag === undefined) ? true : !flag);
+            this.todoList.forEach(element => element.selected = element.id === id ?  flag : element.selected);
         },
         //点击完成选中元素
         finishSelect(){
-            this.todoList = this.todoList.filter(item=>!this.selectItem.includes(item.id));
-            this.selectItem = [];
+            this.todoList.forEach(element=>{
+                if(element.selected){
+                    this.axios.post('deleteTodo',{id: element.id}).then(res=>{
+                        res = res.data;
+                        if(res.status === 200){
+                                this.todoList = res.message;
+                            }else{
+                                alert(res.message);
+                                console.log(res.description);
+                                return ;
+                            }
+                    }).catch(err=>{
+                        alert(err.data.message);
+                        console.log(err.data.description);
+                        return ;
+                    });
+                }
+            });
+            this.todoList = this.todoList.filter(item=>!item.selected);
         },
         //清除全部
         clearAll(){
-            let flag = confirm('Clear All?');
-            if(flag){
-                this.selectItem = []
-                this.todoList = []
-            }
+                this.todoList.forEach(element=>{
+                    this.axios.post('deleteTodo',{id: element.id}).then(res=>{
+                        res = res.data;
+                        if(res.status === 200){
+                            this.todoList = res.message;
+                        }else{
+                            alert(res.message);
+                            console.log(res.description);
+                            return ;
+                        }
+                    }).catch(err=>{
+                        alert(err.data.message);
+                        console.log(err.data.description);
+                        return ;
+                    });
+                });
         },
         //删除特定项
         finishItem(id){
+            this.axios.post('deleteTodo',{id}).then(res=>{
+                res = res.data;
+                if(res.status === 200){
+                    this.todoList = res.message;
+                }else{
+                    alert(res.message);
+                    console.log(res.description);
+                }
+            }).catch(err=>{
+                alert(err.data.message);
+                console.log(err.data.description);
+            });
             this.todoList = this.todoList.filter(item=>item.id != id);
+        },
+
+        //提交todo
+        submitTodo(deadline,title,description){
+            this.axios.post('submit',{deadline,title,description}).then((res) => {
+                res = res.data;
+                if(res.status === 200){
+                    this.todoList = res.message;
+                    this.isShowTodoContent = false;
+                }else{
+                    alert(res.message);
+                    console.log(res.description);
+                }
+            }).catch((err) => {
+                alert(err.data.message);
+                console.log(err.data.description);
+            });
+        },
+        //获取todo
+        getTodo(){
+            this.axios.post('getList').then(res=>{
+                res = res.data;
+                if(res.status === 200){
+                    this.todoList = res.message;
+                }else{
+                    alert(res.message);
+                    console.log(res.description);
+                }
+            }).catch(err=>{
+                alert(err.data.message);
+                console.log(err.data.description);
+            });
         }
     },
     components:{
@@ -153,8 +215,11 @@ export default {
 
     #main-content{
         margin 0 auto
-        min-width 500px
-        max-width 660px
+
+        @media screen  and (min-width: 764px){
+            min-width 500px
+            max-width 660px   
+        }
 
         @media screen and (max-width: 764px){
             padding 0 10px

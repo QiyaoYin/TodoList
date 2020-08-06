@@ -1,23 +1,10 @@
 <template>
-    <router-view id="app"></router-view>
+    <router-view></router-view>
 </template>
 
 <script>
 export default {
   name: 'app',
-  metaInfo: {
-    meta:[
-        {
-            name: 'apple-mobile-web-app-capable',
-            content: 'yes'
-        },
-        {
-            name: 'viewport',
-            content: 'width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no'
-        }
-        ],
-    title:'todolist',
-  },
   beforeCreate(){
     this.axios.defaults.baseURL = this._URL;
   },

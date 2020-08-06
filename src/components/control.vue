@@ -13,7 +13,8 @@ export default {
             this.$emit('finish-select');
         },
         clearAll(){
-            this.$emit('clear-all');
+            let flag = confirm('Clear All?');
+            if(flag) this.$emit('clear-all');
         }
     }
 }

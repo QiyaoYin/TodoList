@@ -13,7 +13,7 @@
         <div class="todo-input-content description-input-content">
             <textarea v-model="todoDescription" class="todo-input description-input" cols="30" rows="10" placeholder="description"></textarea>
         </div>
-        <button class="submit-todo" type="button">ADD TO DO</button>
+        <button class="submit-todo" type="button" @click="submitTodo">ADD TO DO</button>
     </div>
 </template>
 
@@ -39,6 +39,10 @@ export default {
         exitTodoContent(){
             this.$emit('exit-todo-content');
         },
+        //提交
+        submitTodo(){
+            if(this.todoDate && this.todoTitle && this.todoDescription) this.$emit('submit-todo',this.todoDate,this.todoTitle,this.todoDescription);
+        }
     }
 }
 </script>
@@ -54,7 +58,8 @@ export default {
         padding 0 10px
         box-shadow 1px 0 5px rgba(157,200,200,.7);
         background-color $strongGreen
-
+        z-index 1001
+        
         @media screen and (max-width: 764px){
             width 100%
             box-sizing border-box
