@@ -2,6 +2,11 @@
     <div id="content">
         <div id='loading-content' v-if="!loaded"></div>
         <!-- <today/> -->
+        <div id="change-bg" :class="[isChangeBg ? 'active' : '']" @click="changeBg">
+                <transition name="change-bg-button-ani">
+                    <svg v-if="!isChangeBg" t="1596732240856" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1787" width="200" height="200"><path d="M981.448462 133.180788a35.367512 35.367512 0 0 0-35.367512 35.367512v85.103076a505.092283 505.092283 0 0 0-939.449541 221.046951 35.367512 35.367512 0 0 0 32.604425 38.130599 35.367512 35.367512 0 0 0 35.367512-32.604425 434.357258 434.357258 0 0 1 819.53157-165.785213h-93.944954a35.367512 35.367512 0 1 0 0 71.287641h181.2585a35.367512 35.367512 0 0 0 35.367512-35.367512V168.5483a35.367512 35.367512 0 0 0-35.367512-35.367512z m0 379.095521a35.367512 35.367512 0 0 0-38.130599 32.604425 434.357258 434.357258 0 0 1-819.531571 165.785213h100.023746a35.367512 35.367512 0 1 0 0-71.287642H42.551538a35.367512 35.367512 0 0 0-35.367512 35.367513v181.258499a35.367512 35.367512 0 1 0 71.287642 0v-85.655693a505.092283 505.092283 0 0 0 939.449541-221.046951 35.367512 35.367512 0 0 0-34.814895-37.025364z" fill="#ffffff" p-id="1788"></path></svg>
+                </transition>
+            </div>
         <transition name='todo-content-ani'>
             <todo-content 
                 :isMobile='isMobile' 
@@ -48,6 +53,7 @@ export default {
             todoList:[],
             loaded: false,
             backgroundUrl: '',
+            isChangeBg: false,
         }
     },
     mounted(){
@@ -64,26 +70,31 @@ export default {
         //加载必要文件
         initFile(){
             let promiseAll = [];
-            promiseAll[0] = this.setBg(this.bgUrl);
+            promiseAll[0] = this.setBg(this.bgUrl())
+            .then((url)=>{this.isChangeBg = false;document.body.style.backgroundImage = `url(${url})`;})
+            .catch(()=>{});
             Promise.all(promiseAll).then(()=>{
                 this.loaded = true;
             });
         },
         //设置背景
         setBg(url){
-            if(this.screen[0] > 764){
-                return new Promise((resolve,reject)=>{
-                let image = new Image();
-                image.onload = function(){
-                    resolve();
-                }
-                image.onerror = function(){
+            let that = this;
+            return new Promise((resolve,reject)=>{
+                if(this.screen[0] > 764 && !this.isChangeBg){
+                    that.isChangeBg = true;
+                    let image = new Image();
+                    image.onload = function(){
+                        resolve(url);
+                    }
+                    image.onerror = function(){
+                        reject();
+                    }
+                    image.src = url;
+                }else{
                     reject();
                 }
-                image.src = url;
-                document.body.style.backgroundImage = `url(${url})`;
             });
-            }
         },
         //监听窗口大小变化
         watchResize(){
@@ -189,6 +200,12 @@ export default {
                 alert(err.data.message);
                 console.log(err.data.description);
             });
+        },
+        //换背景
+        changeBg(){
+            this.setBg(this.bgUrl())
+            .then((url)=>{this.isChangeBg = false;document.body.style.backgroundImage = `url(${url})`;})
+            .catch(()=>{});
         }
     },
     components:{
@@ -216,6 +233,47 @@ export default {
         background-size 50px auto
         background-position center;
         background-repeat no-repeat
+    }
+
+    #change-bg{
+        position fixed
+        bottom 40px
+        right 40px
+        display flex
+        justify-content center
+        align-items center
+        width 35px
+        height 35px
+        border none
+        border-radius 20px
+        outline none
+        opacity .8
+        cursor pointer
+        background-color $lightBg
+        background-position center
+        background-repeat no-repeat 
+        background-size 100% auto
+        transition transform .3s linear 
+
+        svg{
+            width 100%;
+            height auto;
+
+            path{
+                transition fill .3s linear
+            }
+        }
+
+        &:hover{
+            transform scale(1.1) rotate(90deg);
+
+            path{
+                fill $strongGreen
+            }
+        }
+    }
+    #change-bg.active{
+        background-image url('../assets/images/three-dots.svg')
     }
 
     #show-todo-content{
@@ -299,5 +357,22 @@ export default {
             transform translateY(100%)
         }
     }
+
+    .change-bg-button-ani-enter{
+        opacity 0
+    }
+
+    .change-bg-button-ani-enter-active{
+        transition opacity .3s linear
+    }
+
+    .change-bg-button-ani-leave-to{
+        opacity 0
+    }
+
+    .change-bg-button-ani-leave-active{
+        transition opacity .3s linear
+    }
+
 
 </style>
