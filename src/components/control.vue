@@ -25,8 +25,10 @@ export default {
         display flex
         justify-content flex-end
         width 100%
+        min-height 40px
         box-sizing border-box
-
+        margin-bottom 20px
+        
         .control-button{
             background-color transparent 
             border none 

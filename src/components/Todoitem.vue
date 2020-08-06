@@ -10,18 +10,19 @@
         <div class="detail-content">
             <div class="title-deadline-content">
                 <h5 class="item-title">{{ todo.title }}</h5>
-                <p class="item-deadline">{{ todo.deadline }}</p>
+                <p class="item-deadline">{{ deadline }}</p>
             </div>
             <transition name="description-ani">
                 <p v-if="isShowAll" class="item-descripton">{{ todo.description }}</p>
             </transition>
             <transition name="delete-item-ani">
-                <button v-if="isShowAll" class="delete-item" type="button" @click="finishItem">finished</button>
+                <button v-if="isShowAll" class="delete-item" type="button" @click="finishItem">
+                    <svg t="1596722300777" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1805"><path d="M1000.727273 93.090909h-311.854546L619.054545 23.272727c-4.654545-4.654545-9.309091-4.654545-13.963636-4.654545-4.654545-13.963636-13.963636-18.618182-23.272727-18.618182h-139.636364c-9.309091 0-18.618182 9.309091-23.272727 18.618182-4.654545 0-9.309091 4.654545-13.963636 4.654545L339.781818 88.436364s0 4.654545-4.654545 4.654545H23.272727c-13.963636 0-23.272727 9.309091-23.272727 23.272727s9.309091 23.272727 23.272727 23.272728h325.818182c9.309091 0 18.618182-4.654545 23.272727-13.963637h4.654546l65.163636-65.163636c0-9.309091 0-9.309091 4.654546-13.963636h134.981818c0 4.654545 4.654545 4.654545 4.654545 4.654545L651.636364 121.018182c4.654545 9.309091 13.963636 18.618182 23.272727 18.618182h325.818182c13.963636 0 23.272727-9.309091 23.272727-23.272728s-9.309091-23.272727-23.272727-23.272727zM907.636364 232.727273c-13.963636 0-23.272727 9.309091-23.272728 23.272727V930.909091c0 23.272727-18.618182 46.545455-46.545454 46.545454H186.181818c-27.927273 0-46.545455-18.618182-46.545454-46.545454V256c0-13.963636-9.309091-23.272727-23.272728-23.272727s-23.272727 9.309091-23.272727 23.272727V930.909091c0 51.2 41.890909 93.090909 93.090909 93.090909h651.636364c51.2 0 93.090909-41.890909 93.090909-93.090909V256c0-13.963636-9.309091-23.272727-23.272727-23.272727z" fill="#666" p-id="1806"></path><path d="M325.818182 861.090909v-605.090909c0-13.963636-9.309091-23.272727-23.272727-23.272727s-23.272727 9.309091-23.272728 23.272727v605.090909c0 13.963636 9.309091 23.272727 23.272728 23.272727s23.272727-9.309091 23.272727-23.272727zM512 861.090909v-605.090909c0-13.963636-9.309091-23.272727-23.272727-23.272727s-23.272727 9.309091-23.272728 23.272727v605.090909c0 13.963636 9.309091 23.272727 23.272728 23.272727s23.272727-9.309091 23.272727-23.272727zM698.181818 861.090909v-605.090909c0-13.963636-9.309091-23.272727-23.272727-23.272727s-23.272727 9.309091-23.272727 23.272727v605.090909c0 13.963636 9.309091 23.272727 23.272727 23.272727s23.272727-9.309091 23.272727-23.272727z" fill="#666" p-id="1807"></path></svg>
+                </button>
             </transition>
         </div>
         <div class="show-all-content" @click="isShowAll = !isShowAll">
-            <svg t="1596646837787" :class="['arrow','icon',isShowAll ? 'reverse' : '']" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3867"><path d="M232 392l280 280 280-280z" p-id="3868" fill="#A976D1"></path></svg>
-            <!-- <svg t="1596646081329" :class="['arrow','icon',isShowAll ? 'reverse' : '']" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3698"><path d="M819.07712 478.69952l-225.4848 191.488a81.73568 81.73568 0 0 1-53.0432 19.47648 81.77664 81.77664 0 0 1-53.02272-19.47648l-225.4848-191.488a81.92 81.92 0 1 1 106.06592-124.86656l172.4416 146.45248 172.46208-146.45248a81.92 81.92 0 0 1 106.06592 124.86656z" p-id="3699" fill="#A976D1"></path></svg> -->
+            <svg t="1596646837787" :class="['arrow','icon',isShowAll ? 'reverse' : '']" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3867"><path d="M232 392l280 280 280-280z" p-id="3868" fill="#888"></path></svg>
         </div>
     </div>
 </template>
@@ -35,11 +36,29 @@ export default {
             selected: false,
         }
     },
-    props: {
+    props: ['todo'],
+    computed:{
+        deadline(){
+            let timeRan = (Date.parse(this.todo.deadline)) - Date.parse(new Date().toLocaleDateString());
+            if(timeRan <= 0){
+                return `EXPIRED:${this.todo.deadline}`;
+            }else if(timeRan <= 86400000){
+                return "TODAY";
+            }else if(timeRan <= 172800000){
+                return "TOMORROW";
+            }else{
+                return this.todo.deadline;
+            }
+        }
+    },
+    watch: {
         todo: {
-            type:Object,
-            required:true
-        },
+           handler(val){
+               this.selected = val.selected;
+          },
+         deep: true,
+         immediate: true
+     }
     },
     methods:{
         changeSelect(){
@@ -60,9 +79,11 @@ export default {
         padding 10px
         margin-bottom 10px
         box-sizing border-box
-        background-color #ffffff
         border-radius 10px
 
+        @media screen and (min-width: 764px){
+            border-top 1px solid rgb(150,150,150)
+        }
         .detail-content{
             display flex
             flex-direction column
@@ -90,19 +111,32 @@ export default {
 
         .item-descripton{
             font-size 14px
-            color #999999
+            color #666666
         }
 
         .delete-item{
+            height 20px
+            width auto
             color #666666
             background-color transparent 
             border none 
             outline none 
             cursor pointer
             align-self: flex-end;
+            transition transform .3s linear 
 
             &:hover{
                 color $strongGreen
+                transform scale(1.1);
+
+                path{
+                    fill $strongGreen
+                }
+            }
+
+            svg{
+                height 15px
+                width auto
             }
         }
 
@@ -142,6 +176,12 @@ export default {
                 height auto
                 transition transform .3s linear
                 cursor pointer
+
+                &:hover{
+                    path{
+                        fill $strongGreen
+                    }
+                }
             }
 
             .arrow.reverse{

@@ -1,5 +1,7 @@
 <template>   
-    <div>
+    <div id="content">
+        <div id='loading-content' v-if="!loaded"></div>
+        <!-- <today/> -->
         <transition name='todo-content-ani'>
             <todo-content 
                 :isMobile='isMobile' 
@@ -16,15 +18,14 @@
             </div>
         </transition>
         <div id="main-content">
-            <today/>
             <control 
                 @finish-select="finishSelect" 
                 @clear-all="clearAll"
             />
-            <template v-for="item in todoList">
+            <template v-for="(item) in todoList">
                 <todo-item 
-                    :todo='item' 
-                    :key="item.id"
+                    :todo='item'
+                    :key='item.id'
                     @change-select="changeSelect" 
                     @finish-item="finishItem"
                 />
@@ -35,7 +36,7 @@
 <script>
 import todoContent from '../components/TodoContent'
 import todoItem from '../components/Todoitem'
-import today from '../components/today'
+//import today from '../components/today'
 import control from '../components/control'
 
 export default {
@@ -45,22 +46,45 @@ export default {
             screen:[document.body.clientWidth,document.body.clientHeight],
             isShowTodoContent: false,
             todoList:[],
+            loaded: false,
+            backgroundUrl: '',
         }
     },
     mounted(){
         this.watchResize();
         this.getTodo();
+        this.initFile();
     },
     computed:{
         isMobile(){
             return (this.screen[0] <= 764);
         }
     },
-    updated(){
-        console.log('updated');
-        console.log(this.isMobile);
-    },
     methods:{
+        //加载必要文件
+        initFile(){
+            let promiseAll = [];
+            promiseAll[0] = this.setBg(this.bgUrl);
+            Promise.all(promiseAll).then(()=>{
+                this.loaded = true;
+            });
+        },
+        //设置背景
+        setBg(url){
+            if(this.screen[0] > 764){
+                return new Promise((resolve,reject)=>{
+                let image = new Image();
+                image.onload = function(){
+                    resolve();
+                }
+                image.onerror = function(){
+                    reject();
+                }
+                image.src = url;
+                document.body.style.backgroundImage = `url(${url})`;
+            });
+            }
+        },
         //监听窗口大小变化
         watchResize(){
             let that = this;
@@ -170,13 +194,30 @@ export default {
     components:{
         todoContent,
         todoItem,
-        today,
+        //today,
         control
     }
 }
 </script>
 
 <style lang="stylus">
+    #content{
+        height 100%;
+    }
+
+    #loading-content{
+        position absolute;
+        top 0
+        right 0 
+        bottom 0
+        left 0
+        background-color #ffffff
+        background-image url('../assets/images/loading.svg');
+        background-size 50px auto
+        background-position center;
+        background-repeat no-repeat
+    }
+
     #show-todo-content{
         position absolute
         left 10px
@@ -199,6 +240,9 @@ export default {
             background-color $strongGreen
 
         }
+        @media screen and (min-width: 764px){
+            background-color: $lightBg;
+        }
 
         @media screen and (max-width: 764px){
             left unset 
@@ -215,10 +259,13 @@ export default {
 
     #main-content{
         margin 0 auto
+        height 100%
+        overflow auto
 
         @media screen  and (min-width: 764px){
             min-width 500px
-            max-width 660px   
+            max-width 800px   
+            background-color rgba(250,250,250,0.8)
         }
 
         @media screen and (max-width: 764px){

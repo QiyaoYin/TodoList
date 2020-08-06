@@ -1,7 +1,7 @@
 <template>
     <div class="timer-content">
-        <h1>My Day</h1>
-        <h3>{{ todaytime }}</h3>
+        <h1 class="timer-title">My Day</h1>
+        <h3 class="timer-content">{{ todaytime }}</h3>
     </div>
 </template>
 
@@ -25,5 +25,24 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    
+    .timer-content{
+        display flex
+        justify-content flex-end
+
+        .timer-title{
+            min-width 120px
+            text-align center
+            padding 0
+            margin 0
+            background-color rgba(230,230,230,.2);
+        }
+
+        .timer-content{
+            min-width 200px
+            text-align center
+            padding 0
+            margin 0
+            background-color rgba(230,230,230,.2);
+        }
+    }
 </style>

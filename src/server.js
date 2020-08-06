@@ -39,7 +39,7 @@ app.post('/submit',jsonParser,async (req,res,next)=>{
     let result = {};
     try{
         await List.create({title,description,deadline});
-        let todolist = await List.findAll({where: {status: 0}});
+        let todolist = await List.findAll({where: {status: 0},order: [['deadline', 'ASC']]});
         result.status = 200;
         result.message = todolist;
         res.json(result);
@@ -52,7 +52,7 @@ app.post('/submit',jsonParser,async (req,res,next)=>{
 app.post('/getList',async (req,res,next)=>{
     let result = {};
     try{
-        let todolist = await List.findAll({where: {status: 0}});
+        let todolist = await List.findAll({where: {status: 0},order: [['deadline', 'ASC']]});
         result.status = 200;
         result.message = todolist;
         res.json(result);
@@ -61,19 +61,21 @@ app.post('/getList',async (req,res,next)=>{
     }
 });
 
+//删除数据
 app.post('/deleteTodo',jsonParser,async (req,res,next)=>{
     const {id} = req.body;
     let result = {};
     try{
         await List.update({status: 1},{where: {id}});
-        let todolist = await List.findAll({where: {status: 0}});
+        let todolist = await List.findAll({where: {status: 0},order: [['deadline', 'ASC']]});
         result.status = 200;
         result.message = todolist;
         res.json(result);
     }catch(e){
         next(e);
     }
-})
+});
+
 //错误处理
 app.use((err,req,res)=>{
     let result = {};

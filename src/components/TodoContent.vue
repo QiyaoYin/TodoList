@@ -1,7 +1,7 @@
 <template>
     <div class='todo-content'>
         <div class="exit-todo-content" @click.stop="exitTodoContent">
-            <svg class="exit icon" t="1596628042314" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2958"><path d="M559.786667 512l314.026666-314.026667c13.653333-13.653333 13.653333-34.133333 0-47.786666-13.653333-13.653333-34.133333-13.653333-47.786666 0L512 464.213333 197.973333 150.186667c-13.653333-13.653333-34.133333-13.653333-47.786666 0-13.653333 13.653333-13.653333 34.133333 0 47.786666l314.026666 314.026667-314.026666 314.026667c-13.653333 13.653333-13.653333 34.133333 0 47.786666 13.653333 13.653333 34.133333 13.653333 47.786666 0l314.026667-314.026666 314.026667 314.026666c13.653333 13.653333 34.133333 13.653333 47.786666 0 13.653333-13.653333 13.653333-34.133333 0-47.786666L559.786667 512z" p-id="2959" fill='#fff'></path></svg>
+            <svg class="exit icon" t="1596628042314" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2958"><path d="M559.786667 512l314.026666-314.026667c13.653333-13.653333 13.653333-34.133333 0-47.786666-13.653333-13.653333-34.133333-13.653333-47.786666 0L512 464.213333 197.973333 150.186667c-13.653333-13.653333-34.133333-13.653333-47.786666 0-13.653333 13.653333-13.653333 34.133333 0 47.786666l314.026666 314.026667-314.026666 314.026667c-13.653333 13.653333-13.653333 34.133333 0 47.786666 13.653333 13.653333 34.133333 13.653333 47.786666 0l314.026667-314.026666 314.026667 314.026666c13.653333 13.653333 34.133333 13.653333 47.786666 0 13.653333-13.653333 13.653333-34.133333 0-47.786666L559.786667 512z" p-id="2959" fill='#999'></path></svg>
         </div>
         <div class="todo-input-content date-input-content">
             <input :class="['date-input','todo-input',isMobile ? 'unactive' : '']" v-model="todoDate" type="date">
@@ -56,8 +56,8 @@ export default {
         flex-direction column
         border-radius 0 7px 7px 0
         padding 0 10px
-        box-shadow 1px 0 5px rgba(157,200,200,.7);
-        background-color $strongGreen
+        box-shadow 1px 0 10px rgba(150,150,150,.4);
+        background-color #ffffff
         z-index 1001
         
         @media screen and (max-width: 764px){
@@ -81,6 +81,10 @@ export default {
 
                 &:hover{
                     transform rotate(90deg) scale(1.1)
+
+                    path{
+                        fill $strongGreen
+                    }
                 }
             }
         }
@@ -90,20 +94,23 @@ export default {
 
         .todo-input-content{
             width 100%;
-            min-height 50px
+            min-height 55px
             box-sizing border-box
             padding 10px
 
             .todo-input{
                 width 100%
-                box-sizing border-box
-                border none
+                border 1px solid #999
+                border-radius 5px
                 outline none
                 padding 5px 10px
+                box-sizing border-box
             }
-            .date-input-mobile,.title-input,.submit-todo{
-                height 30px   
+
+            .date-input,.date-input-mobile,.title-input,.submit-todo{
+                height 35px   
             }
+
             .date-input.unactive{
                 opacity 0
             }
@@ -129,11 +136,11 @@ export default {
             border-radius 5px
             outline none 
             color #fff
-            background-color $lightPurple
+            background-color $lightGreen
             cursor pointer
 
             &:hover{
-                background-color $strongPurple
+                background-color $strongGreen
             }
         }
     }

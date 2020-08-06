@@ -23,6 +23,13 @@ export default {
         overflow hidden
     }
     body{
-      background-color rgba(157,200,200,.5)
+      background-color rgba(230,230,230,.7)
+      background-position center
+      background-size 100% 100%
+      background-repeat no-repeat
+
+      @media screen and (max-width: 764px){
+        background-image url("") !important;
+      }
     }
 </style>
