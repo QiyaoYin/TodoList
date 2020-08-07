@@ -7,17 +7,17 @@
                     <svg v-if="!isChangeBg" t="1596732240856" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1787" width="200" height="200"><path d="M981.448462 133.180788a35.367512 35.367512 0 0 0-35.367512 35.367512v85.103076a505.092283 505.092283 0 0 0-939.449541 221.046951 35.367512 35.367512 0 0 0 32.604425 38.130599 35.367512 35.367512 0 0 0 35.367512-32.604425 434.357258 434.357258 0 0 1 819.53157-165.785213h-93.944954a35.367512 35.367512 0 1 0 0 71.287641h181.2585a35.367512 35.367512 0 0 0 35.367512-35.367512V168.5483a35.367512 35.367512 0 0 0-35.367512-35.367512z m0 379.095521a35.367512 35.367512 0 0 0-38.130599 32.604425 434.357258 434.357258 0 0 1-819.531571 165.785213h100.023746a35.367512 35.367512 0 1 0 0-71.287642H42.551538a35.367512 35.367512 0 0 0-35.367512 35.367513v181.258499a35.367512 35.367512 0 1 0 71.287642 0v-85.655693a505.092283 505.092283 0 0 0 939.449541-221.046951 35.367512 35.367512 0 0 0-34.814895-37.025364z" fill="#ffffff" p-id="1788"></path></svg>
                 </transition>
             </div>
-        <transition name='todo-content-ani'>
-            <todo-content 
+        <transition name='submit-pan-ani'>
+            <submit-pan 
                 :isMobile='isMobile' 
-                v-if="isShowTodoContent" 
-                @exit-todo-content="exitTodoContent" 
+                v-if="isShowSubmitPan" 
+                @exit-submit-pan="exitSubmitPan" 
                 @submit-todo="submitTodo"
             />
 
-            <div id="show-todo-content" 
-                @click.stop="isShowTodoContent = true" 
-                v-if="!isShowTodoContent"
+            <div id="show-submit-pan" 
+                @click.stop="isShowSubmitPan = true" 
+                v-if="!isShowSubmitPan"
             >
                 <svg t="1596622673094" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1989"><path d="M866.016 476h-318.016V165.984q0-15.008-10.496-25.504T512 129.984q-15.008 0-25.504 10.496t-10.496 25.504v310.016h-312q-14.016 0-24.992 10.496T128 512q0 15.008 11.008 25.504t24.992 10.496h312v312q0 14.016 10.496 24.992T512 896q15.008 0 25.504-11.008t10.496-24.992v-312h318.016q15.008 0 25.504-10.496t10.496-25.504q0-15.008-10.496-25.504t-25.504-10.496z" p-id="1990" fill="#fff"></path></svg>
             </div>
@@ -27,29 +27,70 @@
                 @finish-select="finishSelect" 
                 @clear-all="clearAll"
             />
-            <template v-for="(item) in todoList">
+            <!-- <template v-for="(item) in todoList">
                 <todo-item 
                     :todo='item'
                     :key='item.id'
                     @change-select="changeSelect" 
                     @finish-item="finishItem"
                 />
-            </template>
+            </template> -->
+            <!-- <template v-for="(guide,index) in guides">
+                    <todo-pan
+                        :key="index"
+                        :lists="guide.list"
+                        :title="guide.name"
+                    />
+            </template> -->
+            <todo-pan v-for="(guide,index) in guides"
+                :key="index"
+                :lists="guide.list"
+                :title="guide.name"
+                @change-select="changeSelect" 
+                @finish-item="finishItem"
+            />
+            <!-- <todo-pan
+                :lists="todayList"
+                :title="'TODAY'"
+                @change-select="changeSelect" 
+                @finish-item="finishItem"
+            />
+
+            <todo-pan
+                :lists="tomorrowList"
+                :title="'TOMORROW'"
+                @change-select="changeSelect" 
+                @finish-item="finishItem"
+            />
+
+            <todo-pan
+                :lists="otherList"
+                :title="'OTHERS'"
+                @change-select="changeSelect" 
+                @finish-item="finishItem"
+            />
+
+            <todo-pan
+                :lists="expiredList"
+                :title="'EXPIRED'"
+                @change-select="changeSelect" 
+                @finish-item="finishItem"
+            /> -->
         </div>
     </div>
 </template>
 <script>
-import todoContent from '../components/TodoContent'
-import todoItem from '../components/Todoitem'
+import submitPan from '../components/SubmitPan'
 //import today from '../components/today'
-import control from '../components/control'
+import control from '../components/Control'
+import todoPan from '../components/TodoPan'
 
 export default {
     name: 'index',
     data() {
         return {
             screen:[document.body.clientWidth,document.body.clientHeight],
-            isShowTodoContent: false,
+            isShowSubmitPan: false,
             todoList:[],
             loaded: false,
             backgroundUrl: '',
@@ -64,6 +105,65 @@ export default {
     computed:{
         isMobile(){
             return (this.screen[0] <= 764);
+        },
+        guides(){
+            return ([
+                {
+                    name: 'EXPIRED',
+                    list: this.todoList.filter(item=>Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString()) <= 0)
+                },
+                {
+                    name: 'TODAY',
+                    list: this.todoList.filter(item=>{
+                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                                if(timeRan > 0 && timeRan <= 86400000){
+                                return item;
+                                }
+                        })
+                },
+                {
+                    name: 'TOMORROW',
+                    list: this.todoList.filter(item=>{
+                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                            if(timeRan > 86400000 && timeRan <= 172800000){
+                                return item;
+                            }
+                        })
+                },
+                {
+                    name: 'OTHERS',
+                    list: this.todoList.filter(item=>{
+                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                            if(timeRan > 172800000){
+                                return item;
+                            }
+                        })
+                }
+            ]);
+        },
+        todayList(){
+            return this.todoList.filter(item=>{
+                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                if(timeRan > 0 && timeRan <= 86400000){
+                    return item;
+                }
+            });
+        },
+        tomorrowList(){
+            return this.todoList.filter(item=>{
+                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                if(timeRan > 86400000 && timeRan <= 172800000){
+                    return item;
+                }
+            });
+        },
+        otherList(){
+            return this.todoList.filter(item=>{
+                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                if(timeRan > 172800000){
+                    return item;
+                }
+            });
         }
     },
     methods:{
@@ -72,7 +172,7 @@ export default {
             let promiseAll = [];
             promiseAll[0] = this.setBg(this.bgUrl())
             .then((url)=>{this.isChangeBg = false;document.body.style.backgroundImage = `url(${url})`;})
-            .catch(()=>{});
+            .catch(()=>{this.isChangeBg = false;});
             Promise.all(promiseAll).then(()=>{
                 this.loaded = true;
             });
@@ -104,8 +204,8 @@ export default {
             }
         },
         //退出输入todo的内容框
-        exitTodoContent(){
-            this.isShowTodoContent = false;
+        exitSubmitPan(){
+            this.isShowSubmitPan = false;
         },
         //改变选中状态
         changeSelect(flag,id){
@@ -132,7 +232,7 @@ export default {
                     });
                 }
             });
-            this.todoList = this.todoList.filter(item=>!item.selected);
+            //this.todoList = this.todoList.filter(item=>!item.selected);
         },
         //清除全部
         clearAll(){
@@ -167,7 +267,7 @@ export default {
                 alert(err.data.message);
                 console.log(err.data.description);
             });
-            this.todoList = this.todoList.filter(item=>item.id != id);
+            //this.todoList = this.todoList.filter(item=>item.id != id);
         },
 
         //提交todo
@@ -176,7 +276,7 @@ export default {
                 res = res.data;
                 if(res.status === 200){
                     this.todoList = res.message;
-                    this.isShowTodoContent = false;
+                    this.isShowSubmitPan = false;
                 }else{
                     alert(res.message);
                     console.log(res.description);
@@ -205,14 +305,14 @@ export default {
         changeBg(){
             this.setBg(this.bgUrl())
             .then((url)=>{this.isChangeBg = false;document.body.style.backgroundImage = `url(${url})`;})
-            .catch(()=>{});
-        }
+            .catch(()=>{this.isChangeBg = false;});
+        },
     },
     components:{
-        todoContent,
-        todoItem,
+        submitPan,
         //today,
-        control
+        control,
+        todoPan
     }
 }
 </script>
@@ -276,7 +376,7 @@ export default {
         background-image url('../assets/images/three-dots.svg')
     }
 
-    #show-todo-content{
+    #show-submit-pan{
         position absolute
         left 10px
         top 10px
@@ -334,7 +434,7 @@ export default {
     }
 
     /** animation */
-    .todo-content-ani-enter{
+    .submit-pan-ani-enter{
         transform translateX(-300px)
 
         @media screen and (max-width: 764px){
@@ -342,15 +442,15 @@ export default {
         }
     }
 
-    .todo-content-ani-enter-active{
+    .submit-pan-ani-enter-active{
         transition transform .3s cubic-bezier(1, 0.05, 1, 1.6)
     }
 
-    .todo-content-ani-leave-active{
+    .submit-pan-ani-leave-active{
         transition transform .3s cubic-bezier(0.02,-0.28, 0.99, 0.04)
     }
 
-    .todo-content-ani-leave-to{
+    .submit-pan-ani-leave-to{
         transform translateX(-300px);
 
         @media screen and (max-width: 764px){

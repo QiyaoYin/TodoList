@@ -1,6 +1,6 @@
 <template>
-    <div class='todo-content'>
-        <div class="exit-todo-content" @click.stop="exitTodoContent">
+    <div class='submit-pan'>
+        <div class="exit-submit-pan" @click.stop="exitSubmitPan">
             <svg class="exit icon" t="1596628042314" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2958"><path d="M559.786667 512l314.026666-314.026667c13.653333-13.653333 13.653333-34.133333 0-47.786666-13.653333-13.653333-34.133333-13.653333-47.786666 0L512 464.213333 197.973333 150.186667c-13.653333-13.653333-34.133333-13.653333-47.786666 0-13.653333 13.653333-13.653333 34.133333 0 47.786666l314.026666 314.026667-314.026666 314.026667c-13.653333 13.653333-13.653333 34.133333 0 47.786666 13.653333 13.653333 34.133333 13.653333 47.786666 0l314.026667-314.026666 314.026667 314.026666c13.653333 13.653333 34.133333 13.653333 47.786666 0 13.653333-13.653333 13.653333-34.133333 0-47.786666L559.786667 512z" p-id="2959" fill='#999'></path></svg>
         </div>
         <div class="todo-input-content date-input-content">
@@ -20,7 +20,7 @@
 
 <script>
 export default {
-    name: 'todocontent',
+    name: 'submitpan',
     props:{
         isMobile:{
             type:Boolean,
@@ -36,19 +36,19 @@ export default {
     },
     methods:{
         //退出todolist输入框
-        exitTodoContent(){
-            this.$emit('exit-todo-content');
+        exitSubmitPan(){
+            this.$emit('exit-submit-pan');
         },
         //提交
         submitTodo(){
-            if(this.todoDate && this.todoTitle && this.todoDescription) this.$emit('submit-todo',this.todoDate,this.todoTitle,this.todoDescription);
+            if(this.todoDate && this.todoTitle) this.$emit('submit-todo',this.todoDate,this.todoTitle,this.todoDescription);
         }
     }
 }
 </script>
 
 <style lang="stylus" scoped>
-    .todo-content{
+    .submit-pan{
         position absolute
         top 0
         bottom 0
@@ -66,7 +66,7 @@ export default {
             border-radius 7px 7px 0 0
             top 70px
         }
-        .exit-todo-content{
+        .exit-submit-pan{
             display flex
             justify-content flex-end
             width 100%
