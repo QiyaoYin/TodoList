@@ -7,7 +7,7 @@ front-end uses vue.js, back-end uses node.js and database uses mysql.
 2. Type the following command in your project root directory to install the node package.
 
 ```
-node install
+npm install
 ```
 
 3. Type the following command in your project root directory to run front-end server.
