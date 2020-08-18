@@ -4,7 +4,7 @@ const List = require('./models/List');
 const app = express();
 const jsonParser = bodyParser.json();
 
-const whiteList = ['http://localhost:3000','http://192.168.0.109:3000','http://127.0.0.1:3000'];
+const whiteList = ['http://localhost:3000','http://192.168.0.109:3000','http://127.0.0.1:3000','https://yinqy.github.io','https://www.yinqy.github.io'];
 
 app.use((req,res,next)=>{
     let origin = req.headers.origin

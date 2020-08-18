@@ -27,21 +27,6 @@
                 @finish-select="finishSelect" 
                 @clear-all="clearAll"
             />
-            <!-- <template v-for="(item) in todoList">
-                <todo-item 
-                    :todo='item'
-                    :key='item.id'
-                    @change-select="changeSelect" 
-                    @finish-item="finishItem"
-                />
-            </template> -->
-            <!-- <template v-for="(guide,index) in guides">
-                    <todo-pan
-                        :key="index"
-                        :lists="guide.list"
-                        :title="guide.name"
-                    />
-            </template> -->
             <todo-pan v-for="(guide,index) in guides"
                 :key="index"
                 :lists="guide.list"
@@ -49,40 +34,13 @@
                 @change-select="changeSelect" 
                 @finish-item="finishItem"
             />
-            <!-- <todo-pan
-                :lists="todayList"
-                :title="'TODAY'"
-                @change-select="changeSelect" 
-                @finish-item="finishItem"
-            />
-
-            <todo-pan
-                :lists="tomorrowList"
-                :title="'TOMORROW'"
-                @change-select="changeSelect" 
-                @finish-item="finishItem"
-            />
-
-            <todo-pan
-                :lists="otherList"
-                :title="'OTHERS'"
-                @change-select="changeSelect" 
-                @finish-item="finishItem"
-            />
-
-            <todo-pan
-                :lists="expiredList"
-                :title="'EXPIRED'"
-                @change-select="changeSelect" 
-                @finish-item="finishItem"
-            /> -->
         </div>
     </div>
 </template>
 <script>
 import submitPan from '../components/SubmitPan'
 //import today from '../components/today'
-import control from '../components/Control'
+import control from '../components/control'
 import todoPan from '../components/TodoPan'
 
 export default {
@@ -101,6 +59,7 @@ export default {
         this.watchResize();
         this.getTodo();
         this.initFile();
+        console.log(this.guides);
     },
     computed:{
         isMobile(){
@@ -110,12 +69,12 @@ export default {
             return ([
                 {
                     name: 'EXPIRED',
-                    list: this.todoList.filter(item=>Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString()) <= 0)
+                    list: this.todoList.filter(item=>Date.parse(item.deadline) - Date.parse(new Date().toString()) <= 0)
                 },
                 {
                     name: 'TODAY',
                     list: this.todoList.filter(item=>{
-                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toString());
                                 if(timeRan > 0 && timeRan <= 86400000){
                                 return item;
                                 }
@@ -124,7 +83,7 @@ export default {
                 {
                     name: 'TOMORROW',
                     list: this.todoList.filter(item=>{
-                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toString());
                             if(timeRan > 86400000 && timeRan <= 172800000){
                                 return item;
                             }
@@ -133,7 +92,7 @@ export default {
                 {
                     name: 'OTHERS',
                     list: this.todoList.filter(item=>{
-                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                            let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toString());
                             if(timeRan > 172800000){
                                 return item;
                             }
@@ -143,7 +102,7 @@ export default {
         },
         todayList(){
             return this.todoList.filter(item=>{
-                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toString());
                 if(timeRan > 0 && timeRan <= 86400000){
                     return item;
                 }
@@ -151,7 +110,7 @@ export default {
         },
         tomorrowList(){
             return this.todoList.filter(item=>{
-                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toString());
                 if(timeRan > 86400000 && timeRan <= 172800000){
                     return item;
                 }
@@ -159,7 +118,7 @@ export default {
         },
         otherList(){
             return this.todoList.filter(item=>{
-                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toLocaleDateString());
+                let timeRan = Date.parse(item.deadline) - Date.parse(new Date().toString());
                 if(timeRan > 172800000){
                     return item;
                 }
