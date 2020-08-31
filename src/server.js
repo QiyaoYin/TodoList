@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const List = require('./models/List');
+const My = require('./models/My');
 const app = express();
 const jsonParser = bodyParser.json();
 
@@ -76,17 +77,39 @@ app.post('/deleteTodo',jsonParser,async (req,res,next)=>{
     }
 });
 
-//错误处理
-app.use((err,req,res)=>{
+//获取体重列表体重
+app.get('/getWeightList',async (req,res,next)=>{
     let result = {};
-    if(err){
-        console.log(err);
-        result.status = 500;
-        result.message = "出现错误！";
-        result.description = err;
+    try{
+        let weightList = await My.findAll({attributes: ['cr_time', 'num']});
+        result.status = 200;
+        result.message = weightList;
         res.json(result);
+    }catch(e){
+        next(e);
     }
 });
+
+//增加体重
+app.post('/addWeight',jsonParser,async (req,res,next)=>{
+    let {num,cr_time} = req.body;
+    let result = {};
+    try{
+        await My.create({num,cr_time});
+        let weightList = await My.findAll({attributes: ['cr_time', 'num']});
+        result.status = 200;
+        result.message = weightList;
+        res.json(result);
+    }catch(e){
+        next(e);
+    }
+});
+
+//错误处理
+app.use((err,req, res) => {
+    //服务器发生错误状态码是500,err.massage保存错误信息
+    res.status(500).send(err.message);
+})
 
 app.listen(4000,'0.0.0.0',()=>{
     console.log(`run successfully!${new Date().toLocaleDateString()}`);
